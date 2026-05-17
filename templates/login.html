@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Iniciar Sesión – TarjetasGT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden
+    }
+
+    .bg-glow {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none
+    }
+
+    .glow-1 {
+      position: absolute;
+      top: -20%;
+      left: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(31, 111, 235, .25), transparent 70%)
+    }
+
+    .glow-2 {
+      position: absolute;
+      bottom: -20%;
+      right: -10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(188, 140, 255, .2), transparent 70%)
+    }
+
+    .login-card {
+      position: relative;
+      z-index: 1;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 20px;
+      padding: 48px 44px;
+      width: min(420px, 95vw);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .5);
+      animation: cardIn .5s ease
+    }
+
+    @keyframes cardIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 36px
+    }
+
+    .logo-icon {
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, #1f6feb, #bc8cff);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -1px
+    }
+
+    .logo-text {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -.5px
+    }
+
+    .logo-sub {
+      font-size: 12px;
+      color: #8b949e;
+      margin-top: 2px
+    }
+
+    h1 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 6px
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #8b949e;
+      margin-bottom: 28px
+    }
+
+    .form-group {
+      margin-bottom: 18px
+    }
+
+    label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #8b949e;
+      margin-bottom: 6px
+    }
+
+    input {
+      width: 100%;
+      background: #1c2128;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      color: #e6edf3;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .2s
+    }
+
+    input:focus {
+      border-color: #58a6ff
+    }
+
+    input::placeholder {
+      color: #8b949e;
+      opacity: .7
+    }
+
+    .btn-login {
+      width: 100%;
+      background: linear-gradient(135deg, #1f6feb, #388bfd);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 13px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all .2s
+    }
+
+    .btn-login:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(31, 111, 235, .4)
+    }
+
+    .btn-login:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+      transform: none
+    }
+
+    .error-msg {
+      background: rgba(248, 81, 73, .12);
+      border: 1px solid rgba(248, 81, 73, .3);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: #f85149;
+      margin-bottom: 16px;
+      display: none
+    }
+
+    .error-msg.show {
+      display: block
+    }
+
+    .footer-note {
+      text-align: center;
+      font-size: 12px;
+      color: #8b949e;
+      margin-top: 24px
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg-glow">
+    <div class="glow-1"></div>
+    <div class="glow-2"></div>
+  </div>
+
+  <div class="login-card">
+    <div class="logo">
+      <div class="logo-icon">TC</div>
+      <div>
+        <div class="logo-text">TarjetasGT</div>
+        <div class="logo-sub">Sistema de Circulación</div>
+      </div>
+    </div>
+
+    <h1>Bienvenido</h1>
+    <p class="subtitle">Ingresa tus credenciales para continuar</p>
+
+    <div class="error-msg" id="error-msg">Usuario o contraseña incorrectos</div>
+
+    <form onsubmit="doLogin(event)">
+      <div class="form-group">
+        <label for="usuario">Usuario</label>
+        <input type="text" id="usuario" placeholder="nombre de usuario" autocomplete="username" required />
+      </div>
+      <div class="form-group">
+        <label for="clave">Contraseña</label>
+        <input type="password" id="clave" placeholder="••••••••" autocomplete="current-password" required />
+      </div>
+      <button type="submit" class="btn-login" id="btn-login">Iniciar Sesión</button>
+    </form>
+
+    <p class="footer-note">Sistema de Gestión de Tarjetas de Circulación</p>
+  </div>
+
+  <script>
+    async function doLogin(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-login');
+      const err = document.getElementById('error-msg');
+      err.classList.remove('show');
+      btn.disabled = true;
+      btn.textContent = 'Verificando…';
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            usuario: document.getElementById('usuario').value,
+            clave: document.getElementById('clave').value
+          })
+        });
+        if (res.ok) {
+          window.location.href = '/';
+        } else {
+          err.classList.add('show');
+          btn.disabled = false;
+          btn.textContent = 'Iniciar Sesión';
+        }
+      } catch {
+        err.textContent = 'Error de conexión con el servidor';
+        err.classList.add('show');
+        btn.disabled = false;
+        btn.textContent = 'Iniciar Sesión';
+      }
+    }
+  </script>
+</body>
+
+</html>
