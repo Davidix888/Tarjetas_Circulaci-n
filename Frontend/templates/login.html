@@ -24,7 +24,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden
+      overflow-x: hidden;
+      overflow-y: auto;
+      padding: 20px 14px
     }
 
     .bg-glow {
@@ -201,6 +203,27 @@
       font-size: 12px;
       color: #8b949e;
       margin-top: 24px
+    }
+
+    @media (max-width: 540px) {
+      .login-card {
+        padding: 26px 18px;
+        border-radius: 14px
+      }
+
+      .logo {
+        margin-bottom: 22px
+      }
+
+      .logo-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 15px
+      }
+
+      .logo-text {
+        font-size: 20px
+      }
     }
   </style>
 </head>

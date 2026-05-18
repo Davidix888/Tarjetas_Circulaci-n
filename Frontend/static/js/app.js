@@ -1,8 +1,8 @@
-const API = '';
+﻿const API = '';
 let allTarjetas = [];
 let catalogo = { marcas:[], modelos:[], lineas:[], colores:[] };
 
-// ── Auth ──────────────────────────────────────────────────────────────────────
+// "-? Auth "---------------------------------------------------------------------?
 async function init() {
   try {
     const me = await apiFetch('/api/me');
@@ -19,7 +19,7 @@ async function doLogout() {
   window.location.href = '/login';
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// "-? Helpers "------------------------------------------------------------------?
 async function apiFetch(url, opts={}) {
   const res = await fetch(API+url, { headers:{'Content-Type':'application/json'}, credentials:'include', ...opts });
   const data = await res.json();
@@ -32,7 +32,7 @@ function toast(msg, type='info') {
     const icon = type === 'error' ? 'error' : (type === 'success' ? 'success' : 'info');
     Swal.fire({
       icon: icon,
-      title: type === 'error' ? 'Oops...' : (type === 'success' ? '¡Éxito!' : 'Aviso'),
+      title: type === 'error' ? 'Oops...' : (type === 'success' ? 'Exito!' : 'Aviso'),
       text: msg,
       timer: type === 'error' ? undefined : 3000,
       showConfirmButton: type === 'error'
@@ -73,12 +73,24 @@ function closePreview() {
   document.getElementById('modal-preview').classList.remove('open');
 }
 
-function badgeEstado(e) {
-  return e ? '<span class="badge badge-green">✅ Activa</span>'
-           : '<span class="badge badge-red">🚫 Inactiva</span>';
+function isVencida(fechaVencimiento) {
+  if (!fechaVencimiento) return false;
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  const fv = new Date(`${fechaVencimiento}T00:00:00`);
+  return fv < hoy;
 }
 
-// ── Navegación ────────────────────────────────────────────────────────────────
+function badgeEstado(estado, fechaVencimiento) {
+  if (estado && isVencida(fechaVencimiento)) {
+    return '<span class="badge badge-yellow">Vencida</span>';
+  }
+  return estado
+    ? '<span class="badge badge-green">Activa</span>'
+    : '<span class="badge badge-red">Inactiva</span>';
+}
+
+// "-? Navegación "---------------------------------------------------------------?
 function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -108,7 +120,7 @@ document.getElementById('toggleSidebar').addEventListener('click', () => {
   }
 });
 
-// ── Dashboard ─────────────────────────────────────────────────────────────────
+// "-? Dashboard "----------------------------------------------------------------?
 async function loadDashboard() {
   try {
     const s = await apiFetch('/api/stats');
@@ -121,18 +133,18 @@ async function loadDashboard() {
     document.getElementById('dash-tbody').innerHTML = rows.slice(0,8).map(r=>`
       <tr>
         <td><strong>${r.no_tarjeta}</strong></td>
-        <td>${r.placa||'—'}</td>
-        <td>${r.propietario_nombre||'—'}</td>
+        <td>${r.placa||'-'}</td>
+        <td>${r.propietario_nombre||'-'}</td>
         <td>${r.marca||''} ${r.linea||''}</td>
-        <td>${badgeEstado(r.tarjeta_estado)}</td>
-        <td>${r.fecha_vencimiento||'—'}</td>
+        <td>${badgeEstado(r.tarjeta_estado, r.fecha_vencimiento)}</td>
+        <td>${r.fecha_vencimiento||'-'}</td>
       </tr>`).join('');
   } catch(e) { toast(e.message,'error'); }
 }
 
-// ── Tarjetas ──────────────────────────────────────────────────────────────────
+// "-? Tarjetas "-----------------------------------------------------------------?
 async function loadTarjetas() {
-  document.getElementById('tarjetas-tbody').innerHTML = '<tr><td colspan="15" class="loader">Cargando…</td></tr>';
+  document.getElementById('tarjetas-tbody').innerHTML = '<tr><td colspan="7" class="loader">Cargando...</td></tr>';
   try {
     allTarjetas = await apiFetch('/api/tarjetas');
     renderTarjetas(allTarjetas);
@@ -144,34 +156,38 @@ function renderTarjetas(rows) {
   document.getElementById('tarjetas-tbody').innerHTML = rows.length ? rows.map(r=>`
     <tr>
       <td><strong>${r.no_tarjeta}</strong></td>
-      <td>${r.placa||'—'}</td>
-      <td>${r.propietario_nombre||'—'}</td>
-      <td><small>${r.nit||'—'}</small></td>
-      <td><small>${r.cui||'—'}</small></td>
-      <td>${r.marca||'—'}</td>
-      <td>${r.linea||'—'}</td>
-      <td>${r.modelo||'—'}</td>
-      <td>${r.color||'—'}</td>
-      <td>${r.tipo||'—'}</td>
-      <td>${r.uso||'—'}</td>
-      <td>${r.anio||'—'}</td>
-      <td>${badgeEstado(r.tarjeta_estado)}</td>
-      <td>${r.fecha_vencimiento||'—'}</td>
+      <td>
+        <strong>${r.placa||'-'}</strong>
+        <small style="display:block;color:#8b949e">Historial: ${r.tarjetas_historicas||1} tarjeta(s)</small>
+      </td>
+      <td>
+        <div>${r.propietario_nombre||'-'}</div>
+        <small style="color:#8b949e">NIT: ${r.nit||'-'} | CUI: ${r.cui||'-'}</small>
+      </td>
+      <td>
+        <div>${r.marca||'-'} ${r.linea||''}</div>
+        <small style="color:#8b949e">${r.tipo||'-'} | ${r.uso||'-'} | ${r.anio||'-'} | ${r.color||'-'}</small>
+      </td>
+      <td>${badgeEstado(r.tarjeta_estado, r.fecha_vencimiento)}</td>
+      <td>${r.fecha_vencimiento||'-'}</td>
       <td>
         <div class="action-btns">
-          <button class="btn btn-sm btn-outline btn-icon" onclick="verPreview('${r.no_tarjeta}')" title="Ver tarjeta">🪪</button>
-          <button class="btn btn-sm btn-outline btn-icon" onclick="modalEditar('${r.no_tarjeta}')" title="Editar">✏️</button>
-          <button class="btn btn-sm btn-outline btn-icon" onclick="modalCambiarDueno('${r.no_tarjeta}')" title="Cambio dueño">👤</button>
+          <button class="btn btn-sm btn-outline btn-icon" onclick="verPreview('${r.no_tarjeta}')" title="Ver tarjeta">Ver</button>
+          <button class="btn btn-sm btn-outline btn-icon" onclick="modalEditar('${r.no_tarjeta}')" title="Editar">Editar</button>
+          ${isVencida(r.fecha_vencimiento)
+            ? `<button class="btn btn-sm btn-outline btn-icon" disabled title="No disponible: tarjeta vencida">Traspaso</button>`
+            : `<button class="btn btn-sm btn-outline btn-icon" onclick="modalCambiarDueno('${r.no_tarjeta}')" title="Traspaso">Traspaso</button>`}
           ${r.tarjeta_estado
-            ? `<button class="btn btn-sm btn-danger btn-icon" onclick="modalDesactivar('${r.no_tarjeta}')" title="Desactivar">🚫</button>`
-            : `<button class="btn btn-sm btn-success btn-icon" onclick="activar('${r.no_tarjeta}')" title="Activar">✅</button>`}
+            ? `<button class="btn btn-sm btn-danger btn-icon" onclick="modalDesactivar('${r.no_tarjeta}')" title="Desactivar por impago">Impago</button>`
+            : `<button class="btn btn-sm btn-success btn-icon" onclick="activar('${r.no_tarjeta}')" title="Reactivar tarjeta">Reactivar</button>`}
         </div>
       </td>
     </tr>`).join('')
-    : '<tr><td colspan="15" style="text-align:center;padding:32px;color:#8b949e">Sin resultados</td></tr>';
+    : '<tr><td colspan="7" style="text-align:center;padding:32px;color:#8b949e">Sin resultados</td></tr>';
 }
 
 document.getElementById('filter-estado').addEventListener('change', filtrar);
+document.getElementById('filter-campo').addEventListener('change', filtrar);
 document.getElementById('filter-buscar').addEventListener('input', filtrar);
 document.getElementById('global-search').addEventListener('input', e => {
   document.getElementById('filter-buscar').value = e.target.value;
@@ -180,66 +196,66 @@ document.getElementById('global-search').addEventListener('input', e => {
 
 function filtrar() {
   const est = document.getElementById('filter-estado').value;
+  const campo = document.getElementById('filter-campo').value;
   const q   = document.getElementById('filter-buscar').value.toLowerCase();
   let rows  = allTarjetas;
   if (est !== '') rows = rows.filter(r => String(r.tarjeta_estado)===est);
-  if (q) rows = rows.filter(r =>
-    [r.placa,r.propietario_nombre,r.no_tarjeta,r.cui,r.nit,r.marca,r.linea]
-      .some(v => (v||'').toLowerCase().includes(q)));
+  if (q) {
+    rows = rows.filter(r => {
+      const data = {
+        placa: r.placa,
+        historial: String(r.tarjetas_historicas || 1),
+        propietario: r.propietario_nombre,
+        no_tarjeta: r.no_tarjeta,
+        nit: r.nit,
+        cui: r.cui,
+        vehiculo: `${r.marca||''} ${r.linea||''} ${r.tipo||''} ${r.uso||''} ${r.color||''} ${r.anio||''}`
+      };
+      if (campo === 'all') {
+        return Object.values(data).some(v => (v||'').toLowerCase().includes(q));
+      }
+      return (data[campo] || '').toLowerCase().includes(q);
+    });
+  }
   renderTarjetas(rows);
 }
 
-// ── Vista previa tarjeta SAT ──────────────────────────────────────────────────
+// "-? Vista previa tarjeta SAT "-------------------------------------------------?
 async function verPreview(no) {
   try {
     const r = await apiFetch(`/api/tarjetas/${no}`);
     const html = `
-    <div class="sat-card">
-      <div class="sat-left">
-        <div class="sat-header">
-          <div class="sat-logo">⊕SAT</div>
-          <h3>TARJETA DE CIRCULACIÓN</h3>
-          <p>SAT - ${r.no_tarjeta}</p>
-          <p>No. ${r.no_tarjeta}</p>
-        </div>
-        <div class="sat-row"><span class="sat-lbl">NIT:</span><span class="sat-val">${r.nit||'—'}</span></div>
-        <div class="sat-row"><span class="sat-lbl">CUI:</span><span class="sat-val">${r.cui||'—'}</span></div>
-        <div class="sat-row"><span class="sat-lbl">USO:</span><span class="sat-val">${r.uso||'—'}</span></div>
-        <div class="sat-row"><span class="sat-lbl">TIPO:</span><span class="sat-val">${r.tipo||'—'}</span></div>
-        <div class="sat-row"><span class="sat-lbl">LÍNEA:</span><span class="sat-val">${r.linea||'—'}</span></div>
-        <div class="sat-row"><span class="sat-lbl">CHASIS:</span><span class="sat-val">${r.chasis||'—'}</span></div>
-        <div class="sat-row"><span class="sat-lbl">SERIE:</span><span class="sat-val">${r.serie||'—'}</span></div>
-        <div class="sat-row"><span class="sat-lbl">ASIENTOS:</span><span class="sat-val">${r.asientos||'—'}</span></div>
-        <div class="sat-row"><span class="sat-lbl">NOMBRE:</span><span class="sat-val">${r.propietario_nombre||'—'}</span></div>
-        <div class="sat-row"><span class="sat-lbl">PLACA:</span><span class="sat-val"><strong>${r.placa||'—'}</strong></span></div>
-        <div class="sat-row"><span class="sat-lbl">MARCA:</span><span class="sat-val">${r.marca||'—'}</span></div>
-        <div class="sat-row"><span class="sat-lbl">MODELO:</span><span class="sat-val">${r.anio||'—'}</span></div>
-        <div class="sat-row"><span class="sat-lbl">VIN:</span><span class="sat-val">${r.vin||'—'}</span></div>
-        <div class="sat-row"><span class="sat-lbl">MOTOR:</span><span class="sat-val">${r.motor||'—'}</span></div>
-        <div class="sat-row"><span class="sat-lbl">EJES:</span><span class="sat-val">${r.ejes||'—'}</span></div>
-        <div class="sat-row"><span class="sat-lbl">CILINDROS:</span><span class="sat-val">${r.cilindros||'—'} &nbsp; C.C.: ${r.cilindrada||'—'}</span></div>
-        <div class="sat-row sat-row-wide"><span class="sat-lbl">COLOR:</span><span class="sat-val">${r.color||'—'}</span></div>
-        <div class="sat-row"><span class="sat-lbl">TON:</span><span class="sat-val">${r.peso||'0'}</span></div>
-        <div class="sat-sigs">
-          <div class="sat-sig-line">Jefe del Registro Fiscal de<br>Vehículos - SAT</div>
-          <div class="sat-sig-line">Subjefe del Departamento de<br>Tránsito de PNC</div>
-        </div>
-      </div>
-      <div class="sat-right">
-        <div class="sat-code-header">
-          <div class="sat-logo">⊕SAT</div>
-          <h3>CÓDIGO ÚNICO IDENTIFICADOR</h3>
-          <div class="sat-code-val">${r.anio||''} - ${r.no_tarjeta} - 3</div>
-          <p>Válida hasta: ${r.fecha_vencimiento||'—'}</p>
-        </div>
-        <div class="sat-qr">QR</div>
-        <table class="sat-meta">
-          <tr><td><strong>Usuario:</strong></td><td>${r.nit||'—'}</td></tr>
-          <tr><td><strong>Fecha:</strong></td><td>${r.fecha_emision||'—'}</td></tr>
-          <tr><td><strong>Fecha Reg.:</strong></td><td>${r.fecha_emision||'—'}</td></tr>
-        </table>
-        <p class="sat-legal">Acuerdo Gubernativo 134-2014 Reglamento de la Ley del Impuesto Sobre Circulación de Vehículos Terrestres, Marítimos y Aéreos. Artículo 20; Decreto 132-96 Ley de Tránsito Artículo 18 literal a); y Acuerdo Gubernativo 273-98 Reglamento de la Ley de Tránsito, Artículo 10 literal a).</p>
-      </div>
+    <div class="card" style="padding:16px">
+      <h3 style="margin:0 0 12px 0">Información de Tarjeta</h3>
+      <table style="width:100%;border-collapse:collapse">
+        <tbody>
+          <tr><td><strong>No. Tarjeta</strong></td><td>${r.no_tarjeta||'-'}</td></tr>
+          <tr><td><strong>Estado</strong></td><td>${badgeEstado(r.tarjeta_estado, r.fecha_vencimiento)}</td></tr>
+          <tr><td><strong>Fecha Emisión</strong></td><td>${r.fecha_emision||'-'}</td></tr>
+          <tr><td><strong>Fecha Vencimiento</strong></td><td>${r.fecha_vencimiento||'-'}</td></tr>
+          <tr><td><strong>Placa</strong></td><td>${r.placa||'-'}</td></tr>
+          <tr><td><strong>Historial de Tarjetas</strong></td><td>${r.tarjetas_historicas||1}</td></tr>
+          <tr><td><strong>Propietario</strong></td><td>${r.propietario_nombre||'-'}</td></tr>
+          <tr><td><strong>NIT</strong></td><td>${r.nit||'-'}</td></tr>
+          <tr><td><strong>CUI</strong></td><td>${r.cui||'-'}</td></tr>
+          <tr><td><strong>Marca</strong></td><td>${r.marca||'-'}</td></tr>
+          <tr><td><strong>Modelo</strong></td><td>${r.modelo||'-'}</td></tr>
+          <tr><td><strong>Línea</strong></td><td>${r.linea||'-'}</td></tr>
+          <tr><td><strong>Año</strong></td><td>${r.anio||'-'}</td></tr>
+          <tr><td><strong>Color</strong></td><td>${r.color||'-'}</td></tr>
+          <tr><td><strong>Tipo</strong></td><td>${r.tipo||'-'}</td></tr>
+          <tr><td><strong>Uso</strong></td><td>${r.uso||'-'}</td></tr>
+          <tr><td><strong>Motor</strong></td><td>${r.motor||'-'}</td></tr>
+          <tr><td><strong>VIN</strong></td><td>${r.vin||'-'}</td></tr>
+          <tr><td><strong>Chasis</strong></td><td>${r.chasis||'-'}</td></tr>
+          <tr><td><strong>Serie</strong></td><td>${r.serie||'-'}</td></tr>
+          <tr><td><strong>Ejes</strong></td><td>${r.ejes||'-'}</td></tr>
+          <tr><td><strong>Asientos</strong></td><td>${r.asientos||'-'}</td></tr>
+          <tr><td><strong>Cilindros</strong></td><td>${r.cilindros||'-'}</td></tr>
+          <tr><td><strong>Cilindrada</strong></td><td>${r.cilindrada||'-'}</td></tr>
+          <tr><td><strong>Peso (TON)</strong></td><td>${r.peso||'-'}</td></tr>
+        </tbody>
+      </table>
     </div>`;
     document.getElementById('preview-body').innerHTML = html;
     document.getElementById('preview-overlay').classList.add('open');
@@ -247,7 +263,7 @@ async function verPreview(no) {
   } catch(e) { toast(e.message,'error'); }
 }
 
-// ── Editar ────────────────────────────────────────────────────────────────────
+// "-? Editar "-------------------------------------------------------------------?
 async function modalEditar(no) {
   try {
     const r = await apiFetch(`/api/tarjetas/${no}`);
@@ -260,7 +276,7 @@ async function modalEditar(no) {
           <div class="form-group"><label>Modelo</label><input id="e-modelo" value="${r.modelo||''}"/></div>
           <div class="form-group"><label>Línea</label><input id="e-linea" value="${r.linea||''}"/></div>
           <div class="form-group"><label>Tipo</label>
-            <select id="e-tipo">${['AUTOMÓVIL','CAMIONETA','MOTOCICLETA','CAMIÓN','BUS','MICROBUS','PICK UP'].map(t=>`<option ${t===r.tipo?'selected':''}>${t}</option>`).join('')}</select>
+            <select id="e-tipo">${['AUTOMOVIL','CAMIONETA','MOTOCICLETA','CAMION','BUS','MICROBUS','PICK UP'].map(t=>`<option ${t===r.tipo?'selected':''}>${t}</option>`).join('')}</select>
           </div>
           <div class="form-group"><label>Uso</label>
             <select id="e-uso">${['PARTICULAR','COMERCIAL','OFICIAL','DIPLOMATICO'].map(u=>`<option ${u===r.uso?'selected':''}>${u}</option>`).join('')}</select>
@@ -274,10 +290,10 @@ async function modalEditar(no) {
         </div>
         <div class="modal-actions">
           <button class="btn btn-outline" onclick="closeModal()">Cancelar</button>
-          <button class="btn btn-primary" onclick="guardarEdicion('${no}')">💾 Guardar</button>
+          <button class="btn btn-primary" onclick="guardarEdicion('${no}')">Guardar</button>
         </div>
       </div>`;
-    openModal('Editar – '+no, html);
+    openModal('Editar - '+no, html);
   } catch(e) { toast(e.message,'error'); }
 }
 
@@ -303,15 +319,27 @@ async function guardarEdicion(no) {
   } catch(e) { toast(e.message,'error'); }
 }
 
-// ── Cambio de dueño ───────────────────────────────────────────────────────────
+// "-? Cambio de dueño "----------------------------------------------------------?
 function modalCambiarDueno(no) {
-  openModal('Cambio de Dueño – '+no, `
+  const t = allTarjetas.find(x => x.no_tarjeta === no);
+  if (t && isVencida(t.fecha_vencimiento)) {
+    toast('No se puede realizar traspaso: la tarjeta está vencida', 'error');
+    return;
+  }
+  openModal('Cambio de Dueño - '+no, `
     <div class="inline-form">
+      <div class="form-group" style="margin-bottom:12px">
+        <label>Tipo de propietario</label>
+        <select id="d-tipo-propietario" onchange="toggleTipoPropietarioModal()">
+          <option value="existente">Propietario existente</option>
+          <option value="nuevo">Nuevo propietario</option>
+        </select>
+      </div>
       <div class="form-grid" style="grid-template-columns:1fr 1fr">
         <div class="form-group"><label>CUI *</label>
           <div class="input-action">
             <input id="d-cui" placeholder="3142479710901"/>
-            <button class="btn btn-sm btn-outline" onclick="buscarPropietarioModal()">Buscar</button>
+            <button id="d-btn-buscar" class="btn btn-sm btn-outline" onclick="buscarPropietarioModal()">Buscar</button>
           </div>
         </div>
         <div class="form-group"><label>NIT *</label><input id="d-nit" placeholder="117758493"/></div>
@@ -319,9 +347,23 @@ function modalCambiarDueno(no) {
       </div>
       <div class="modal-actions">
         <button class="btn btn-outline" onclick="closeModal()">Cancelar</button>
-        <button class="btn btn-primary" onclick="guardarCambioDueno('${no}')">👤 Confirmar</button>
+        <button class="btn btn-primary" onclick="guardarCambioDueno('${no}')">Confirmar</button>
       </div>
     </div>`);
+  toggleTipoPropietarioModal();
+}
+
+function toggleTipoPropietarioModal() {
+  const tipo = document.getElementById('d-tipo-propietario')?.value || 'existente';
+  const btnBuscar = document.getElementById('d-btn-buscar');
+  if (!btnBuscar) return;
+  const esNuevo = tipo === 'nuevo';
+  btnBuscar.disabled = esNuevo;
+  btnBuscar.title = esNuevo ? 'No aplica búsqueda para nuevo propietario' : 'Buscar';
+  if (esNuevo) {
+    document.getElementById('d-nit').value = '';
+    document.getElementById('d-nombre').value = '';
+  }
 }
 
 async function buscarPropietarioModal() {
@@ -346,21 +388,21 @@ async function guardarCambioDueno(no) {
   } catch(e) { toast(e.message,'error'); }
 }
 
-// ── Desactivar / Activar ──────────────────────────────────────────────────────
+// "-? Desactivar / Activar "-----------------------------------------------------?
 function modalDesactivar(no) {
-  openModal('Desactivar – '+no, `
+  openModal('Desactivar - '+no, `
     <div class="inline-form">
       <p style="color:#8b949e;font-size:13px;margin-bottom:16px">Selecciona el motivo de desactivación.</p>
       <div class="form-group"><label>Motivo *</label>
         <select id="des-motivo">
-          <option value="IMPAGO">🔴 Impago</option>
-          <option value="VENCIMIENTO">⚠️ Vencimiento</option>
-          <option value="OTRO">📋 Otro</option>
+          <option value="IMPAGO">&#128308; Impago</option>
+          <option value="VENCIMIENTO">&#9888;&#65039; Vencimiento</option>
+          <option value="OTRO">&#128203; Otro</option>
         </select>
       </div>
       <div class="modal-actions">
         <button class="btn btn-outline" onclick="closeModal()">Cancelar</button>
-        <button class="btn btn-danger" onclick="confirmarDesactivar('${no}')">🚫 Desactivar</button>
+        <button class="btn btn-danger" onclick="confirmarDesactivar('${no}')">Ys Desactivar</button>
       </div>
     </div>`);
 }
@@ -380,7 +422,7 @@ async function activar(no) {
   } catch(e) { toast(e.message,'error'); }
 }
 
-// ── Catálogos + Autocomplete ──────────────────────────────────────────────────
+// "-? Catálogos + Autocomplete "-------------------------------------------------?
 async function loadCatalogos() {
   const [marcas, modelos, lineas, colores] = await Promise.all([
     apiFetch('/api/catalogo/marcas'), apiFetch('/api/catalogo/modelos'),
@@ -412,7 +454,7 @@ document.addEventListener('click', e => {
   }
 });
 
-// ── Nueva Tarjeta ─────────────────────────────────────────────────────────────
+// "-? Nueva Tarjeta "------------------------------------------------------------?
 async function buscarPropietario() {
   const cui = document.getElementById('n-cui').value.trim();
   if (!cui) return;
@@ -453,7 +495,7 @@ async function submitNuevaTarjeta(e) {
   };
   try {
     await apiFetch('/api/tarjetas', {method:'POST', body:JSON.stringify(body)});
-    toast('Tarjeta creada exitosamente ✅','success');
+    toast('Tarjeta creada exitosamente o.','success');
     document.getElementById('form-nueva').reset();
     const hoy = new Date().toISOString().split('T')[0];
     document.getElementById('n-fecha_emision').value = hoy;
@@ -465,10 +507,10 @@ async function submitNuevaTarjeta(e) {
   } catch(e) { toast(e.message,'error'); }
 }
 
-// ── Bitácora ──────────────────────────────────────────────────────────────────
+// "-? Bitácora "-----------------------------------------------------------------?
 async function loadRegistros() {
   const tbody = document.getElementById('registros-tbody');
-  tbody.innerHTML = '<tr><td colspan="7" class="loader">Cargando…</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="7" class="loader">Cargando...</td></tr>';
   try {
     const rows = await apiFetch('/api/registros');
     tbody.innerHTML = rows.map(r=>`
@@ -476,15 +518,15 @@ async function loadRegistros() {
         <td>${r.id_registro}</td>
         <td>${r.fecha_registro}</td>
         <td>${r.hora_registro}</td>
-        <td><strong>${r.placa||'—'}</strong></td>
+        <td><strong>${r.placa||'-'}</strong></td>
         <td>${r.nombre_usuario||'Sistema'}</td>
-        <td><small>${r.rol||'—'}</small></td>
+        <td><small>${r.rol||'-'}</small></td>
         <td>${r.estado ? '<span class="badge badge-green">Alta/Edición</span>' : '<span class="badge badge-red">Desactivación</span>'}</td>
       </tr>`).join('');
   } catch(e) { toast(e.message,'error'); }
 }
 
-// ── Defaults form ─────────────────────────────────────────────────────────────
+// "-? Defaults form "------------------------------------------------------------?
 function setFormDefaults() {
   const hoy = new Date().toISOString().split('T')[0];
   const el1 = document.getElementById('n-fecha_emision');
@@ -497,3 +539,8 @@ function setFormDefaults() {
 
 setFormDefaults();
 init();
+
+
+
+
+

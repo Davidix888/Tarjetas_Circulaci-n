@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Tarjetas de Circulación – TarjetasGT</title>
+  <title>Tarjetas de Circulación - TarjetasGT</title>
   <meta name="description" content="Sistema de gestión de tarjetas de circulación vehicular Guatemala."/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
@@ -21,49 +21,49 @@
     </div>
   </div>
   <nav class="sidebar-nav">
-    <a class="nav-item active" href="#" data-view="dashboard" id="nav-dashboard"><span class="nav-icon">📊</span><span>Dashboard</span></a>
-    <a class="nav-item" href="#" data-view="tarjetas"  id="nav-tarjetas" ><span class="nav-icon">📋</span><span>Tarjetas</span></a>
-    <a class="nav-item" href="#" data-view="nueva"     id="nav-nueva"    ><span class="nav-icon">➕</span><span>Nueva Tarjeta</span></a>
-    <a class="nav-item" href="#" data-view="registros" id="nav-registros"><span class="nav-icon">📝</span><span>Bitácora</span></a>
+    <a class="nav-item active" href="#" data-view="dashboard" id="nav-dashboard"><span class="nav-icon">&#128202;</span><span>Dashboard</span></a>
+    <a class="nav-item" href="#" data-view="tarjetas"  id="nav-tarjetas" ><span class="nav-icon">&#128203;</span><span>Tarjetas</span></a>
+    <a class="nav-item" href="#" data-view="nueva"     id="nav-nueva"    ><span class="nav-icon">&#10133;</span><span>Nueva Tarjeta</span></a>
+    <a class="nav-item" href="#" data-view="registros" id="nav-registros"><span class="nav-icon">&#128221;</span><span>Bitácora</span></a>
   </nav>
   <div class="sidebar-footer">
     <div class="user-chip">
       <div class="user-avatar" id="user-avatar">A</div>
       <div>
-        <div class="user-name" id="user-name">—</div>
-        <div class="user-role" id="user-role">—</div>
+        <div class="user-name" id="user-name">-</div>
+        <div class="user-role" id="user-role">-</div>
       </div>
     </div>
-    <button class="btn-logout" id="btn-logout" onclick="doLogout()">🚪 Salir</button>
+    <button class="btn-logout" id="btn-logout" onclick="doLogout()">&#128682; Salir</button>
   </div>
 </aside>
 
 <main class="main-content">
   <header class="topbar">
-    <button class="toggle-btn" id="toggleSidebar">☰</button>
+    <button class="toggle-btn" id="toggleSidebar">&#9776;</button>
     <div class="topbar-title" id="topbar-title">Dashboard</div>
     <div class="topbar-actions">
       <div class="search-box">
-        <span>🔍</span>
-        <input type="text" id="global-search" placeholder="Buscar placa, tarjeta…"/>
+        <span>&#128269;</span>
+        <input type="text" id="global-search" placeholder="Buscar placa, tarjeta..."/>
       </div>
     </div>
   </header>
 
-  <!-- ═══ DASHBOARD ═══ -->
+  <!-- DASHBOARD -->
   <section class="view active" id="view-dashboard">
     <div class="page-header">
       <h1>Dashboard</h1>
       <p>Resumen general del sistema de tarjetas de circulación</p>
     </div>
     <div class="stats-grid">
-      <div class="stat-card blue">  <div class="stat-icon">📋</div><div class="stat-body"><div class="stat-value" id="stat-total">—</div><div class="stat-label">Total Tarjetas</div></div></div>
-      <div class="stat-card green"> <div class="stat-icon">✅</div><div class="stat-body"><div class="stat-value" id="stat-activas">—</div><div class="stat-label">Activas</div></div></div>
-      <div class="stat-card red">   <div class="stat-icon">🚫</div><div class="stat-body"><div class="stat-value" id="stat-inactivas">—</div><div class="stat-label">Inactivas</div></div></div>
-      <div class="stat-card orange"><div class="stat-icon">⚠️</div><div class="stat-body"><div class="stat-value" id="stat-vencidas">—</div><div class="stat-label">Por Vencer</div></div></div>
-      <div class="stat-card purple"><div class="stat-icon">👤</div><div class="stat-body"><div class="stat-value" id="stat-propietarios">—</div><div class="stat-label">Propietarios</div></div></div>
+      <div class="stat-card blue">  <div class="stat-icon">&#128203;</div><div class="stat-body"><div class="stat-value" id="stat-total">-</div><div class="stat-label">Total Tarjetas</div></div></div>
+      <div class="stat-card green"> <div class="stat-icon">&#9989;</div><div class="stat-body"><div class="stat-value" id="stat-activas">-</div><div class="stat-label">Activas</div></div></div>
+      <div class="stat-card red">   <div class="stat-icon">&#128721;</div><div class="stat-body"><div class="stat-value" id="stat-inactivas">-</div><div class="stat-label">Inactivas</div></div></div>
+      <div class="stat-card orange"><div class="stat-icon">&#9888;&#65039;</div><div class="stat-body"><div class="stat-value" id="stat-vencidas">-</div><div class="stat-label">Por Vencer</div></div></div>
+      <div class="stat-card purple"><div class="stat-icon">&#128100;</div><div class="stat-body"><div class="stat-value" id="stat-propietarios">-</div><div class="stat-label">Propietarios</div></div></div>
     </div>
-    <div class="section-title">Últimas tarjetas registradas</div>
+    <div class="section-title">Ultimas tarjetas registradas</div>
     <div class="card">
       <div class="table-wrapper">
         <table><thead><tr><th>No. Tarjeta</th><th>Placa</th><th>Propietario</th><th>Marca / Línea</th><th>Estado</th><th>Vencimiento</th></tr></thead>
@@ -72,7 +72,7 @@
     </div>
   </section>
 
-  <!-- ═══ TARJETAS ═══ -->
+  <!-- TARJETAS -->
   <section class="view" id="view-tarjetas">
     <div class="page-header">
       <h1>Tarjetas de Circulación</h1>
@@ -80,31 +80,38 @@
     </div>
     <div class="toolbar">
       <div class="filter-group">
+        <select id="filter-campo">
+          <option value="all">Buscar en todo</option>
+          <option value="placa">Placa</option>
+          <option value="propietario">Propietario</option>
+          <option value="no_tarjeta">No. Tarjeta</option>
+          <option value="nit">NIT</option>
+          <option value="cui">CUI</option>
+          <option value="vehiculo">Vehículo</option>
+        </select>
         <select id="filter-estado">
           <option value="">Todos los estados</option>
           <option value="true">Activas</option>
           <option value="false">Inactivas</option>
         </select>
-        <input type="text" id="filter-buscar" placeholder="Buscar placa, propietario, CUI…"/>
+        <input type="text" id="filter-buscar" placeholder="Buscar placa, propietario, CUI..."/>
       </div>
-      <button class="btn btn-primary" onclick="showView('nueva')">➕ Nueva Tarjeta</button>
+      <button class="btn btn-primary" onclick="showView('nueva')">Nueva Tarjeta</button>
     </div>
     <div class="card">
       <div class="table-wrapper">
         <table id="tarjetas-table">
           <thead><tr>
-            <th>No. Tarjeta</th><th>Placa</th><th>Propietario</th><th>NIT</th><th>CUI</th>
-            <th>Marca</th><th>Línea</th><th>Modelo</th><th>Color</th><th>Tipo</th><th>Uso</th>
-            <th>Año</th><th>Estado</th><th>Vencimiento</th><th>Acciones</th>
+            <th>No. Tarjeta</th><th>Placa</th><th>Propietario</th><th>Vehiculo</th><th>Estado</th><th>Vencimiento</th><th>Acciones</th>
           </tr></thead>
           <tbody id="tarjetas-tbody"></tbody>
         </table>
       </div>
-      <div class="table-footer"><span id="tarjetas-count">Cargando…</span></div>
+      <div class="table-footer"><span id="tarjetas-count">Cargando...</span></div>
     </div>
   </section>
 
-  <!-- ═══ NUEVA TARJETA ═══ -->
+  <!-- NUEVA TARJETA -->
   <section class="view" id="view-nueva">
     <div class="page-header">
       <h1>Nueva Tarjeta de Circulación</h1>
@@ -114,7 +121,7 @@
 
       <!-- TARJETA -->
       <div class="form-section">
-        <div class="form-section-title">📋 Datos de la Tarjeta</div>
+        <div class="form-section-title">&#128203; Datos de la Tarjeta</div>
         <div class="form-grid">
           <div class="form-group"><label>No. Tarjeta *</label><input id="n-no_tarjeta" required placeholder="202501073733"/></div>
           <div class="form-group"><label>Fecha de Emisión *</label><input type="date" id="n-fecha_emision" required/></div>
@@ -125,7 +132,7 @@
 
       <!-- PROPIETARIO -->
       <div class="form-section">
-        <div class="form-section-title">👤 Propietario</div>
+        <div class="form-section-title">&#128100; Propietario</div>
         <div class="form-grid form-grid-3">
           <div class="form-group">
             <label>CUI *</label>
@@ -133,7 +140,7 @@
           </div>
           <div class="form-group">
             <label>&nbsp;</label>
-            <button type="button" class="btn btn-outline btn-block" onclick="buscarPropietario()">🔍 Buscar Propietario</button>
+            <button type="button" class="btn btn-outline btn-block" onclick="buscarPropietario()">&#128269; Buscar Propietario</button>
           </div>
           <div class="form-group"><label>NIT *</label><input id="n-nit" required placeholder="117758493"/></div>
           <div class="form-group col-span-3"><label>Nombre Completo *</label><input id="n-nombre_propietario" required placeholder="IXQUIAC,SAC.,LUIS,DAVID"/></div>
@@ -142,7 +149,7 @@
 
       <!-- VEHÍCULO -->
       <div class="form-section">
-        <div class="form-section-title">🚗 Datos del Vehículo</div>
+        <div class="form-section-title">Datos del Vehículo</div>
         <div class="form-grid">
           <div class="form-group"><label>Placa *</label><input id="n-placa" required placeholder="M0-822MRT"/></div>
           <div class="form-group"><label>VIN</label><input id="n-vin" placeholder="MD625BF46S1AN6999"/></div>
@@ -152,15 +159,15 @@
           <div class="form-group">
             <label>Tipo *</label>
             <select id="n-tipo" required>
-              <option value="">Seleccionar…</option>
-              <option>AUTOMÓVIL</option><option>CAMIONETA</option><option>MOTOCICLETA</option>
-              <option>CAMIÓN</option><option>BUS</option><option>MICROBUS</option><option>PICK UP</option>
+              <option value="">Seleccionar...</option>
+              <option>AUTOMOVIL</option><option>CAMIONETA</option><option>MOTOCICLETA</option>
+              <option>CAMION</option><option>BUS</option><option>MICROBUS</option><option>PICK UP</option>
             </select>
           </div>
           <div class="form-group">
             <label>Uso *</label>
             <select id="n-uso" required>
-              <option value="">Seleccionar…</option>
+              <option value="">Seleccionar...</option>
               <option>PARTICULAR</option><option>COMERCIAL</option><option>OFICIAL</option><option>DIPLOMATICO</option>
             </select>
           </div>
@@ -174,7 +181,7 @@
 
       <!-- CATÁLOGOS TEXTO -->
       <div class="form-section">
-        <div class="form-section-title">🏷️ Marca, Modelo, Línea y Color</div>
+        <div class="form-section-title">Marca, Modelo, Línea y Color</div>
         <p style="font-size:13px;color:#8b949e;margin-bottom:16px">Escribe directamente. Si el valor no existe se registrará automáticamente.</p>
         <div class="form-grid">
           <div class="form-group">
@@ -210,12 +217,12 @@
 
       <div class="form-actions">
         <button type="button" class="btn btn-outline" onclick="showView('tarjetas')">Cancelar</button>
-        <button type="submit" class="btn btn-primary">💾 Guardar Tarjeta</button>
+        <button type="submit" class="btn btn-primary">&#128190; Guardar Tarjeta</button>
       </div>
     </form>
   </section>
 
-  <!-- ═══ BITÁCORA ═══ -->
+  <!-- BITACORA -->
   <section class="view" id="view-registros">
     <div class="page-header">
       <h1>Bitácora de Registros</h1>
@@ -237,7 +244,7 @@
 <div class="modal" id="modal-detalle">
   <div class="modal-header">
     <h2 id="modal-title">Detalle</h2>
-    <button class="modal-close" onclick="closeModal()">✕</button>
+    <button class="modal-close" onclick="closeModal()">&#10005;</button>
   </div>
   <div class="modal-body" id="modal-body"></div>
 </div>
@@ -246,10 +253,10 @@
 <div class="modal-overlay" id="preview-overlay" onclick="closePreview()"></div>
 <div class="modal modal-wide" id="modal-preview">
   <div class="modal-header">
-    <h2>Vista Previa – Tarjeta de Circulación</h2>
+    <h2>Vista previa - Tarjeta de Circulación</h2>
     <div style="display:flex;gap:8px">
-      <button class="btn btn-sm btn-primary" onclick="window.print()">🖨️ Imprimir</button>
-      <button class="modal-close" onclick="closePreview()">✕</button>
+      <button class="btn btn-sm btn-primary" onclick="window.print()">&#128424;&#65039; Imprimir</button>
+      <button class="modal-close" onclick="closePreview()">&#10005;</button>
     </div>
   </div>
   <div class="modal-body" id="preview-body"></div>
@@ -259,3 +266,8 @@
 <script src="/static/js/app.js"></script>
 </body>
 </html>
+
+
+
+
+

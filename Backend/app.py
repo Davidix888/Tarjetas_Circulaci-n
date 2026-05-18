@@ -1,11 +1,19 @@
 from flask import Flask, jsonify, request, render_template, session, redirect, url_for
 from flask_cors import CORS
 import psycopg2, psycopg2.extras
+from pathlib import Path
 from datetime import date, time
 from functools import wraps
 import traceback
 
-app = Flask(__name__)
+BASE_DIR = Path(__file__).resolve().parent
+FRONTEND_DIR = BASE_DIR.parent / "Frontend"
+
+app = Flask(
+    __name__,
+    template_folder=str(FRONTEND_DIR / "templates"),
+    static_folder=str(FRONTEND_DIR / "static"),
+)
 app.secret_key = 'tarjetas_gt_2024_secret'
 CORS(app, supports_credentials=True)
 
@@ -147,6 +155,7 @@ TARJETA_JOIN = """
            v.placa, v.vin, v.chasis, v.serie, v.tipo, v.uso, v.motor,
            v.cilindros, v.cilindrada, v.ejes, v.peso, v.asientos,
            v.id_color, v.id_linea,
+           COUNT(*) OVER (PARTITION BY v.placa) AS tarjetas_historicas,
            c.color, ma.marca, mo.modelo, li.linea,
            p.cui, p.nit, p.nombre AS propietario_nombre
     FROM tarjeta t
@@ -203,6 +212,21 @@ def crear_tarjeta():
             cur.execute("UPDATE propietario SET nit=%s, nombre=%s WHERE cui=%s",
                         (up("nit"), up("nombre_propietario"), data["cui"].strip()))
 
+        placa_limpia = clean_placa("placa")
+        cur.execute("""
+            SELECT t.no_tarjeta, t.estado, t.fecha_vencimiento
+            FROM vehiculo v
+            JOIN tarjeta t ON t.no_tarjeta = v.no_tarjeta
+            WHERE v.placa = %s
+            ORDER BY t.fecha_vencimiento DESC, t.fecha_emision DESC
+            LIMIT 1
+        """, (placa_limpia,))
+        previa = cur.fetchone()
+        if previa and previa[1] and previa[2] and previa[2] >= date.today():
+            return jsonify({
+                "error": f"La placa {placa_limpia} ya tiene una tarjeta vigente ({previa[0]})."
+            }), 400
+
         # Catálogos (find-or-create)
         id_marca  = find_or_create_marca(cur, data["marca"])
         id_modelo = find_or_create_modelo(cur, data["modelo"], id_marca)
@@ -218,7 +242,7 @@ def crear_tarjeta():
         cur.execute("""INSERT INTO vehiculo(placa,vin,chasis,serie,tipo,uso,motor,cilindros,
                                              cilindrada,ejes,peso,asientos,id_color,id_linea,no_tarjeta,cui)
                        VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
-                    (clean_placa("placa"), up("vin"), up("chasis"), up("serie"),
+                    (placa_limpia, up("vin"), up("chasis"), up("serie"),
                      up("tipo"), up("uso"), up("motor"), data.get("cilindros"),
                      data.get("cilindrada"), data.get("ejes"), data.get("peso"),
                      data.get("asientos"), id_color, id_linea, data["no_tarjeta"].strip().upper(), data["cui"].strip()))
@@ -226,7 +250,7 @@ def crear_tarjeta():
         # Registro
         cur.execute("""INSERT INTO registro(id_registro,fecha_registro,hora_registro,estado,id_usuario,placa)
                        VALUES((SELECT COALESCE(MAX(id_registro),0)+1 FROM registro),CURRENT_DATE,CURRENT_TIME,TRUE,%s,%s)""",
-                    (session.get('user_id', 1), clean_placa("placa")))
+                    (session.get('user_id', 1), placa_limpia))
 
         conn.commit(); cur.close(); conn.close()
         return jsonify({"message": "Tarjeta creada exitosamente"}), 201
@@ -286,6 +310,12 @@ def cambiar_dueno(no_tarjeta):
     data = request.json
     try:
         conn = get_db(); cur = conn.cursor()
+        cur.execute("SELECT estado, fecha_vencimiento FROM tarjeta WHERE no_tarjeta=%s", (no_tarjeta,))
+        t = cur.fetchone()
+        if not t:
+            return jsonify({"error": "Tarjeta no encontrada"}), 404
+        if (t[1] is not None) and (t[1] < date.today()):
+            return jsonify({"error": "No se puede hacer traspaso: la tarjeta está vencida"}), 400
         cur.execute("SELECT cui FROM propietario WHERE cui=%s", (data["cui"],))
         if not cur.fetchone():
             cur.execute("INSERT INTO propietario(cui,nit,nombre) VALUES(%s,%s,%s)",
