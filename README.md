@@ -44,13 +44,13 @@
 ### PostgreSQL
 - Host: `127.0.0.1`
 - Puerto: `5432`
-- Usuario: `postgres`
-- Contrasena: `Cruzita_2005`
+- Usuario: `Usuario postgres`
+- Contrasena: `Constraseña postgres`
 - Base de datos: `proyecto_tarjeta_circulacion`
 
 ### Usuario del sistema (datos de ejemplo)
-- Usuario: `operador_demo`
-- Clave: `operador123`
+- Usuario: `ldixquiac`
+- Clave: `Cruzita_2005`
 - Rol: `OPERADOR`
 
 - Usuario: `consultor_demo`
